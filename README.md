@@ -12,9 +12,9 @@ Objective: Build an exact replica of the given real-estate webpage along with a 
 
 🚀 Live Demo
 
-🌐 Frontend URL: https://your-frontend.vercel.app](https://megaplex-738a.vercel.app/)
+🌐 Frontend URL: https://megaplex-738a.vercel.app/
 
-🔗 Backend API: https://your-backend.onrender.com](https://megaplex-3ujz.onrender.com)
+🔗 Backend API: https://megaplex-3ujz.onrender.com
 
 🧰 Tech Stack
 Frontend
