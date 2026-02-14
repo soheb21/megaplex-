@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import AmenitiesSection from "../sections/AmenitiesSection";
 import BuildingsCarousel from "../sections/BuildingsCarousel";
@@ -18,11 +19,11 @@ type RealEstateData = {
 
   price1Title?: string;
   price1Old?: string;
-  price1New?: string;
+  price1Price?: string;
 
   price2Title?: string;
   price2Old?: string;
-  price2New?: string;
+  price2Price?: string;
 
   address?: string;
 
@@ -36,59 +37,73 @@ type RealEstateData = {
 
 export default function RealEstate({ data }: { data?: RealEstateData }) {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [apiData, setApiData] = useState<RealEstateData | null>(null);
 
   const content = {
     logo:
+      apiData?.logo ||
       data?.logo ||
       "https://dummyimage.com/200x60/8bc34a/ffffff&text=Lime+Logo",
 
     heroImage:
+      apiData?.heroImage ||
       data?.heroImage ||
       "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?auto=format&fit=crop&w=1200&q=80",
 
-    headingTop: data?.headingTop || "THINKING",
+    headingTop: apiData?.headingTop || data?.headingTop || "THINKING",
 
-    headingHighlight: data?.headingHighlight || "OF A FANTASTIC VICINITY?",
+    headingHighlight:
+      apiData?.headingHighlight ||
+      data?.headingHighlight ||
+      "OF A FANTASTIC VICINITY?",
 
     subheading:
+      apiData?.subheading ||
       data?.subheading ||
       "20+ PODIUM LUXURIOUS AMENITIES • SPACIOUS BALCONY HOMES",
 
-    projectNameTop: data?.projectNameTop || "VIGHNAHARTA",
+    projectNameTop:
+      apiData?.projectNameTop || data?.projectNameTop || "VIGHNAHARTA",
 
-    projectNameBottom: data?.projectNameBottom || "INFINITY",
+    projectNameBottom:
+      apiData?.projectNameBottom || data?.projectNameBottom || "INFINITY",
 
-    price1Title: data?.price1Title || "SMART 1 BHK",
+    price1Title: apiData?.price1Title || data?.price1Title || "SMART 1 BHK",
 
-    price1Old: data?.price1Old || "74.99 Lacs",
+    price1Old: apiData?.price1Old || data?.price1Old || "74.99 Lacs",
 
-    price1New: data?.price1New || "₹ 69.99 Lacs*",
+    price1New: apiData?.price1Price || data?.price1Price || "₹ 69.99 Lacs*",
 
-    price2Title: data?.price2Title || "PREMIUM 2 BHK",
+    price2Title: apiData?.price2Title || data?.price2Title || "PREMIUM 2 BHK",
 
-    price2Old: data?.price2Old || "1.05 CR",
+    price2Old: apiData?.price2Old || data?.price2Old || "1.05 CR",
 
-    price2New: data?.price2New || "₹ 96.99 Lacs*",
+    price2New: apiData?.price2Price || data?.price2Price || "₹ 96.99 Lacs*",
 
     address:
+      apiData?.address ||
       data?.address ||
       "BLDG. NO. 223/224, CIRCLE - KANNAMWAR NAGAR I, VIKHROLI (EAST)",
 
-    aboutTitle: data?.aboutTitle || "About Project",
+    aboutTitle: apiData?.aboutTitle || data?.aboutTitle || "About Project",
 
     aboutText:
-      data?.aboutText ||
-      "Vighnaharta Infinity is thoughtfully designed to offer a harmonious blend of modern living and serene surroundings. Every residence reflects smart planning, spacious layouts, and abundant natural light to create a warm and comfortable lifestyle. The project features premium amenities, landscaped open spaces, and well-connected infrastructure that ensures convenience at every step. From elegant architecture to quality construction, every detail is crafted with precision and care.Located in a rapidly developing neighborhood, it provides excellent connectivity to key business hubs, schools, and lifestyle destinations. Vighnaharta Infinity is not just a home — it is a complete living experience for families seeking comfort, growth, and long-term value.",
+      apiData?.aboutText || data?.aboutText || "Project description...",
 
     circleImg1:
+      apiData?.circleImg1 ||
       data?.circleImg1 ||
       "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=800&q=80",
 
     circleImg2:
+      apiData?.circleImg2 ||
       data?.circleImg2 ||
       "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=500&q=80",
 
     circleImg3:
+      apiData?.circleImg3 ||
       data?.circleImg3 ||
       "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=500&q=80",
   };
@@ -101,6 +116,38 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
     }
   };
 
+  const fetchContent = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get("http://localhost:8000/api/content");
+
+      setApiData(res.data || {});
+    } catch (err) {
+      setError("Failed to load website content");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading website...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen flex items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
   return (
     <div className="w-full bg-white text-gray-800 font-sans">
       {/* Navbar */}

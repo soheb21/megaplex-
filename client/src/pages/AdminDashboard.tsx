@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import SectionCard from "../components/SectionCard";
 import Input from "../components/Input";
 import Textarea from "../components/Textarea";
 
 export default function AdminDashboard() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -49,6 +53,19 @@ export default function AdminDashboard() {
     stat5Value: "2.7 LAC",
     stat5Label: "Sq. Ft. Upcoming",
   });
+  const fetchContent = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get("http://localhost:8000/api/content");
+
+      setFormData(res.data);
+    } catch (err) {
+      setError("Failed to load content");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -60,10 +77,33 @@ export default function AdminDashboard() {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log("SEND TO BACKEND:", formData);
-    alert("Content Saved (Frontend Only)");
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+
+      await axios.post("http://localhost:8000/api/content", formData);
+
+      setSuccess("Content updated successfully");
+    } catch (err) {
+      setError("Failed to update content");
+    } finally {
+      setLoading(false);
+    }
   };
+  useEffect(() => {
+    fetchContent();
+  }, []);
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
 
   return (
     <div className="h-screen bg-gray-100 flex relative">
@@ -126,6 +166,25 @@ export default function AdminDashboard() {
         <h1 className="text-2xl md:text-3xl font-bold">
           Website Content Manager
         </h1>
+
+        {/* Status messages */}
+        {loading && (
+          <div className="bg-blue-100 text-blue-700 px-4 py-2 rounded">
+            Loading...
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-100 text-green-700 px-4 py-2 rounded">
+            {success}
+          </div>
+        )}
 
         {/* Hero UI */}
 
@@ -345,9 +404,10 @@ export default function AdminDashboard() {
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-3 rounded-lg shadow font-semibold"
+            disabled={loading}
+            className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-3 rounded-lg shadow font-semibold disabled:opacity-50"
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </main>
