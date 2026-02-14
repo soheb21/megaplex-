@@ -1,8 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-
 import "swiper/css";
-import "swiper/css/pagination";
+import { Autoplay } from "swiper/modules";
 
 type Building = {
   title: string;
@@ -41,11 +39,10 @@ export default function BuildingsCarousel({ data }: { data?: BuildingsData }) {
       </h2>
 
       <Swiper
-        modules={[Pagination, Autoplay]}
+        modules={[Autoplay]}
         spaceBetween={30}
         slidesPerView={1}
-        autoplay={{ delay: 3000 }}
-        pagination={{ clickable: true }}
+        autoplay={{ delay: 2000 }}
         breakpoints={{
           640: { slidesPerView: 1 },
           768: { slidesPerView: 2 },

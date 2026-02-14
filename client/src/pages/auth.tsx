@@ -28,7 +28,7 @@ export default function AdminLogin() {
       setError("");
 
       const res = await axios.post(
-        "http://localhost:8000/api/content/login",
+        "https://megaplex-3ujz.onrender.com/api/content/login",
         formData
       );
       localStorage.setItem("admin", res.data.email);

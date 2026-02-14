@@ -120,7 +120,9 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:8000/api/content");
+      const res = await axios.get(
+        "https://megaplex-3ujz.onrender.com/api/content"
+      );
       console.log(res.data);
       setApiData(res.data || {});
     } catch (err) {

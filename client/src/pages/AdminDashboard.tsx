@@ -118,7 +118,9 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:8000/api/content");
+      const res = await axios.get(
+        "https://megaplex-3ujz.onrender.com/api/content"
+      );
 
       setFormData((prev) => ({
         ...prev,
@@ -204,7 +206,10 @@ export default function AdminDashboard() {
       setError("");
       setSuccess("");
 
-      await axios.post("http://localhost:8000/api/content", formData);
+      await axios.post(
+        "https://megaplex-3ujz.onrender.com/api/content",
+        formData
+      );
 
       setSuccess("Content updated successfully");
     } catch {
@@ -276,6 +281,12 @@ export default function AdminDashboard() {
             <SidebarItem label="Pricing" target="pricing" />
             <SidebarItem label="About Project" target="about" />
             <SidebarItem label="Developer" target="developer" />
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 px-4 py-2 rounded-2xl m-2 text-white"
+            >
+              Logout
+            </button>
           </aside>
         </div>
       )}
