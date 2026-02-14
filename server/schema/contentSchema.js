@@ -1,17 +1,16 @@
 const mongoose = require("mongoose");
 
+/* Website Content Schema */
+
 const contentSchema = new mongoose.Schema(
   {
-    //hero
     headingTop: String,
     headingHighlight: String,
     subheading: String,
 
-    //project
     projectNameTop: String,
     projectNameBottom: String,
 
-    //pricing
     price1Title: String,
     price1Old: String,
     price1Price: String,
@@ -22,15 +21,14 @@ const contentSchema = new mongoose.Schema(
 
     address: String,
 
-    //about
     aboutTitle: String,
     aboutText: String,
 
-    //developer
     developerTitle: String,
     developerText: String,
 
-    //stats
+    /* Developer Stats */
+
     stat1Value: String,
     stat1Label: String,
 
@@ -45,6 +43,23 @@ const contentSchema = new mongoose.Schema(
 
     stat5Value: String,
     stat5Label: String,
+
+    /* Construction Updates (Text Only) */
+
+    constructionUpdates: [
+      {
+        title: String
+      }
+    ],
+
+    /* FAQs */
+
+    faqs: [
+      {
+        question: String,
+        answer: String
+      }
+    ]
   },
   { timestamps: true }
 );

@@ -3,6 +3,17 @@ import axios from "axios";
 import SectionCard from "../components/SectionCard";
 import Input from "../components/Input";
 import Textarea from "../components/Textarea";
+import { useNavigate } from "react-router-dom";
+
+/* New Types */
+type Construction = {
+  title: string;
+};
+
+type FAQ = {
+  question: string;
+  answer: string;
+};
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
@@ -10,7 +21,44 @@ export default function AdminDashboard() {
   const [success, setSuccess] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    headingTop: string;
+    headingHighlight: string;
+    subheading: string;
+
+    projectNameTop: string;
+    projectNameBottom: string;
+
+    price1Title: string;
+    price1Old: string;
+    price1Price: string;
+
+    price2Title: string;
+    price2Old: string;
+    price2Price: string;
+
+    address: string;
+
+    aboutTitle: string;
+    aboutText: string;
+
+    developerTitle: string;
+    developerText: string;
+
+    stat1Value: string;
+    stat1Label: string;
+    stat2Value: string;
+    stat2Label: string;
+    stat3Value: string;
+    stat3Label: string;
+    stat4Value: string;
+    stat4Label: string;
+    stat5Value: string;
+    stat5Label: string;
+
+    constructionUpdates: Construction[];
+    faqs: FAQ[];
+  }>({
     headingTop: "THINKING",
     headingHighlight: "OF A FANTASTIC VICINITY?",
     subheading: "20+ PODIUM LUXURIOUS AMENITIES • SPACIOUS BALCONY HOMES",
@@ -18,7 +66,6 @@ export default function AdminDashboard() {
     projectNameTop: "VIGHNAHARTA",
     projectNameBottom: "INFINITY",
 
-    /* PRICING */
     price1Title: "SMART 1 BHK",
     price1Old: "74.99 Lacs",
     price1Price: "₹ 69.99 Lacs*",
@@ -37,45 +84,119 @@ export default function AdminDashboard() {
     developerText:
       "We are committed to building quality homes with modern amenities.",
 
-    /* DEVELOPER STATS */
     stat1Value: "6",
     stat1Label: "Projects",
-
     stat2Value: "1.32 LAC",
     stat2Label: "Sq. Ft. Area Developed",
-
     stat3Value: "429+",
     stat3Label: "Happy Families",
-
     stat4Value: "3.77 LAC",
     stat4Label: "Sq. Ft. Ongoing",
-
     stat5Value: "2.7 LAC",
     stat5Label: "Sq. Ft. Upcoming",
+
+    constructionUpdates: [
+      { title: "Under Construction" },
+      { title: "Completed Projects" },
+      { title: "Upcoming Launch" },
+    ],
+
+    faqs: [
+      {
+        question: "What makes Swastik trusted?",
+        answer: "",
+      },
+      {
+        question: "Why invest?",
+        answer: "",
+      },
+    ],
   });
+
+  /* Fetch content */
   const fetchContent = async () => {
     try {
       setLoading(true);
 
       const res = await axios.get("http://localhost:8000/api/content");
 
-      setFormData(res.data);
-    } catch (err) {
+      setFormData((prev) => ({
+        ...prev,
+        ...res.data,
+        constructionUpdates:
+          res.data.constructionUpdates || prev.constructionUpdates,
+        faqs: res.data.faqs || prev.faqs,
+      }));
+    } catch {
       setError("Failed to load content");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  /* Auto hide success */
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess("");
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
+  /* Normal change */
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
+
+  /* Construction change */
+
+  const handleConstructionChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const updated = [...formData.constructionUpdates];
+
+    updated[index].title = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      constructionUpdates: updated,
+    }));
+  };
+
+  /* FAQ change */
+
+  const handleFaqChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number,
+    field: "question" | "answer"
+  ) => {
+    const updated = [...formData.faqs];
+
+    updated[index][field] = e.target.value;
+
+    setFormData((prev) => ({
+      ...prev,
+      faqs: updated,
+    }));
+  };
+
+  /* Submit */
 
   const handleSubmit = async () => {
     try {
@@ -86,24 +207,17 @@ export default function AdminDashboard() {
       await axios.post("http://localhost:8000/api/content", formData);
 
       setSuccess("Content updated successfully");
-    } catch (err) {
+    } catch {
       setError("Failed to update content");
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchContent();
-  }, []);
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [success]);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("admin");
+    navigate("/login");
+  };
 
   return (
     <div className="h-screen bg-gray-100 flex relative">
@@ -122,6 +236,12 @@ export default function AdminDashboard() {
           <SidebarItem label="About Project" target="about" />
           <SidebarItem label="Developer" target="developer" />
         </nav>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 px-4 py-2 rounded-2xl m-2 text-white"
+        >
+          Logout
+        </button>
       </aside>
 
       {/* Mobile Topbar */}
@@ -305,8 +425,6 @@ export default function AdminDashboard() {
 
         {/* Developer UI */}
 
-        {/* Developer UI */}
-
         <SectionCard id="developer" title="Developer Section">
           <Input
             label="Title"
@@ -399,7 +517,44 @@ export default function AdminDashboard() {
               />
             </div>
           </div>
+          {/* Construction */}
+
+          <div className="pt-6">
+            <h3 className="font-semibold text-sm mb-3">Construction Titles</h3>
+
+            {formData.constructionUpdates.map((item, i) => (
+              <Input
+                key={i}
+                label={`Card ${i + 1}`}
+                value={item.title}
+                onChange={(e) => handleConstructionChange(e, i)}
+              />
+            ))}
+          </div>
+
+          {/* FAQs */}
+
+          <div className="pt-6">
+            <h3 className="font-semibold text-sm mb-3">FAQs</h3>
+
+            {formData.faqs.map((item, i) => (
+              <div key={i} className="border p-3 rounded mb-3">
+                <Input
+                  label="Question"
+                  value={item.question}
+                  onChange={(e) => handleFaqChange(e, i, "question")}
+                />
+
+                <Textarea
+                  label="Answer"
+                  value={item.answer}
+                  onChange={(e) => handleFaqChange(e, i, "answer")}
+                />
+              </div>
+            ))}
+          </div>
         </SectionCard>
+        {/* Developer Section */}
 
         <div className="flex justify-end">
           <button

@@ -121,7 +121,7 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
       setLoading(true);
 
       const res = await axios.get("http://localhost:8000/api/content");
-
+      console.log(res.data);
       setApiData(res.data || {});
     } catch (err) {
       setError("Failed to load website content");
@@ -149,25 +149,59 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
     );
   }
   return (
-    <div className="w-full bg-white text-gray-800 font-sans">
+    <div className="w-full bg-white text-gray-800 font-sans animate__animated animate__fadeIn">
       {/* Navbar */}
 
       <div className="w-full flex items-center justify-between px-6 md:px-12 py-4 border-b bg-white sticky top-0 z-50 shadow-sm">
         <img
           src={content.logo}
           alt="Logo"
-          className="h-10 md:h-12 object-contain"
+          className="h-10 md:h-12 object-contain rounded-3xl"
         />
 
-        <div className="hidden lg:flex gap-8 text-[15px] font-medium text-gray-600">
-          <button onClick={() => scrollTo("home")}>Home</button>
-          <button onClick={() => scrollTo("overview")}>Overview</button>
-          <button onClick={() => scrollTo("amenities")}>Amenities</button>
-          <button onClick={() => scrollTo("floorplans")}>Floor Plans</button>
-          <button onClick={() => scrollTo("developer")}>Developer</button>
+        <div className="hidden  lg:flex gap-8 text-[15px] font-medium text-gray-600">
+          <button className="cursor-pointer" onClick={() => scrollTo("home")}>
+            Home
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("overview")}
+          >
+            Overview
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("connectivities")}
+          >
+            Connectivities
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("amenities")}
+          >
+            Amenities
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("floorplans")}
+          >
+            Floor Plans
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("developer")}
+          >
+            Developer
+          </button>
+          <button
+            className="cursor-pointer"
+            onClick={() => scrollTo("contact")}
+          >
+            Contact
+          </button>
         </div>
 
-        <button className="hidden md:block bg-lime-500 hover:bg-lime-600 text-white px-4 md:px-6 py-2 rounded-md shadow font-semibold text-sm md:text-base">
+        <button className="hidden md:block bg-gradient-to-r from-lime-400 to-green-500 text-white  px-4 md:px-6 py-2 rounded-md shadow font-semibold text-sm md:text-base">
           Enquiry Now
         </button>
 
@@ -229,16 +263,16 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
                 </span>
               </h2>
 
-              <p className="mt-4 p-2 md:mt-6 max-w-[400px] text-green-900 text-md font-extrabold md:text-sm tracking-wide">
+              <p className="mt-4 p-2 md:mt-6  text-green-900 text-md  md:text-sm tracking-wide">
                 {content.subheading}
               </p>
             </div>
 
             {/* Hero image */}
-            <div className="relative mt-8  lg:absolute lg:bottom-20 lg:left-13 lg:w-[460px] w-full max-w-[520px]">
+            <div className="relative mt-8  lg:block  lg:w-[460px] w-full max-w-[520px]">
               <img
                 src={content.heroImage}
-                className="w-full h-[260px] md:opacity-60 bg-blend-darken md:h-[320px] lg:h-[360px] object-cover rounded-xl shadow-2xl"
+                className="w-full h-[260px]  bg-blend-darken md:h-[320px] lg:h-[360px] object-cover rounded-xl shadow-2xl"
               />
             </div>
           </div>
@@ -321,7 +355,7 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
               {content.aboutText}
             </p>
 
-            <button className="mt-6 md:mt-8 bg-lime-500 hover:bg-lime-600 text-white px-5 md:px-6 py-2 md:py-3 rounded-md shadow font-semibold text-sm md:text-base">
+            <button className="mt-6 md:mt-8 bg-gradient-to-r from-lime-400 to-green-500 text-white  px-5 md:px-6 py-2 md:py-3 rounded-md shadow font-semibold text-sm md:text-base">
               Download Brochure
             </button>
           </div>
@@ -334,6 +368,12 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
         <AmenitiesSection />
       </div>
 
+      {/* Buildings UI */}
+
+      <div id="buildings">
+        <BuildingsCarousel />
+      </div>
+
       {/* Floor Plans UI */}
 
       <div id="floorplans">
@@ -343,13 +383,7 @@ export default function RealEstate({ data }: { data?: RealEstateData }) {
       {/* Developer UI */}
 
       <div id="developer">
-        <DeveloperUpdatesFA />
-      </div>
-
-      {/* Buildings UI */}
-
-      <div id="buildings">
-        <BuildingsCarousel />
+        <DeveloperUpdatesFA data={apiData as any} />
       </div>
     </div>
   );

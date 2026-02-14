@@ -1,13 +1,15 @@
 const express = require("express");
 const {
   getContent,
-  updateContent,
+  saveContent,
 } = require("../controllers/contentController.js");
+const loginAdmin = require("../controllers/adminController.js");
 
 const router = express.Router();
 
 router.get("/", getContent);
 
-router.post("/", updateContent);
+router.post("/", saveContent);
+router.post("/login", loginAdmin);
 
 module.exports = router;

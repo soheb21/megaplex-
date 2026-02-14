@@ -1,35 +1,35 @@
 const Content = require("../schema/contentSchema");
 
-// GET content
+/* Get Content */
+
 const getContent = async (req, res) => {
+  try {
+    const content = await Content.findOne();
+    res.json(content);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* Save / Update */
+
+const saveContent = async (req, res) => {
   try {
     let content = await Content.findOne();
 
-    if (!content) {
-      content = await Content.create({});
+    if (content) {
+      content = await Content.findByIdAndUpdate(
+        content._id,
+        req.body,
+        { new: true }
+      );
+    } else {
+      content = await Content.create(req.body);
     }
 
     res.json(content);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch {
+    res.status(500).json({ message: "Save failed" });
   }
 };
-
-// UPDATE content
-const updateContent = async (req, res) => {
-  try {
-    const updated = await Content.findOneAndUpdate({}, req.body, {
-      new: true,
-      upsert: true,
-    });
-
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-module.exports = {
-  getContent,
-  updateContent,
-};
+module.exports={getContent,saveContent};
